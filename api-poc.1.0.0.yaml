@@ -1,0 +1,447 @@
+openapi: 3.0.0
+info:
+  title: User API POC
+  description: "User-API-POC that only has bare minimum Users and User domain/schema stuff and not extra VO's"
+  contact:
+    name: Tadas Staskevicius
+    email: tstaskevicius@exadel.com
+  version: 1.0.0
+  termsOfService: 'http://ghx.com'
+servers:
+  - url: 'https://TBD'
+    description: ''
+paths:
+  /v1/users:
+    get:
+      tags:
+        - user
+      summary: List of users.
+      description: List of users.
+      operationId: userList
+      responses:
+        '200':
+          description: List of queried users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid status value
+        default:
+          description: Unexpected error
+    post:
+      tags:
+        - user
+      summary: Add a user.
+      description: Add a user.
+      operationId: addUser
+      requestBody:
+        description: class com.ghx.user.data.domain.User
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Id of created user.
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '405':
+          description: Invalid input
+        default:
+          description: Unexpected error
+  '/v1/users/{userId}':
+    get:
+      tags:
+        - user
+      summary: Find User by userId.
+      description: 'com.ghx.user.rest.UserRESTService#getUserView'
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user on which opearation will be performed.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 200 successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                example-1: {}
+        '400':
+          description: Invalid status value
+        default:
+          description: Unexpected error
+    put:
+      tags:
+        - user
+      summary: Update an existing user.
+      description: Update an existing user.
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user on which opearation will be performed.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: class com.ghx.user.data.domain.User
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Returns updated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected error
+    delete:
+      tags:
+        - user
+      summary: Delete an existing user.
+      description: Delete an existing user.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user on which opearation will be performed.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Returns user deletion success message.
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid status value
+        default:
+          description: Unexpected error
+  '/v1/status/{appId}':
+    get:
+      summary: Get Health Status
+      tags:
+        - user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+              examples:
+                APILevelExample1:
+                  value:
+                    appName: ExampleService
+                    isRunning: true
+        '400':
+          description: Bad Request
+      operationId: get-v1-status
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: queryParm1
+      description: TestGreg123 - Get User Domain Health Status
+    parameters:
+      - schema:
+          type: string
+        name: appId
+        in: path
+        required: true
+components:
+  schemas:
+    AgentDetail:
+      type: object
+      properties:
+        associatedOrganizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentOrganization'
+        agentProductRoles:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentProductRole'
+        agentId:
+          type: integer
+          format: int64
+          example: 10009
+        organizationId:
+          type: integer
+          format: int64
+          example: 92
+        orgEID:
+          type: string
+          example: '600000001'
+        roleId:
+          type: integer
+          format: int64
+          example: 26
+        roleName:
+          type: string
+          example: Development Support
+        isPrimary:
+          type: boolean
+          example: true
+        isActive:
+          type: boolean
+          example: true
+        isReadWriteAllowed:
+          type: boolean
+          example: true
+    AgentOrganization:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/AgentOrganizationStatus'
+        modificationDetails:
+          $ref: '#/components/schemas/ModificationDetails'
+        id:
+          type: integer
+          format: int64
+          example: 5
+        organizationId:
+          type: integer
+          format: int64
+          example: 16732
+        organizationEid:
+          type: string
+          example: '600000001'
+        organizationName:
+          type: string
+          example: GHX Organization
+    AgentProductRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 15466896
+        agentId:
+          type: integer
+          format: int64
+          example: 3331781
+        productId:
+          type: integer
+          format: int64
+          example: 180
+        productRoleId:
+          type: integer
+          format: int64
+          example: 94
+        productHandle:
+          type: string
+          example: MetaTrade
+        productRoleHandle:
+          type: string
+          example: MANAGE
+    ModificationDetails:
+      type: object
+      properties:
+        createdBy:
+          type: integer
+          format: int64
+          example: 10009
+        createdDate:
+          type: string
+          format: date
+        updatedBy:
+          type: integer
+          format: int64
+          example: 10009
+        updatedDate:
+          type: string
+          format: date
+    User:
+      type: object
+      properties:
+        agentDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentDetail'
+        userStatus:
+          $ref: '#/components/schemas/UserStatus'
+        id:
+          type: integer
+          description: agentId
+          format: int64
+          example: 10009
+        personId:
+          type: integer
+          format: int64
+          example: 1023
+        userName:
+          type: string
+          example: gwilsonco
+        firstName:
+          type: string
+          example: Gregory
+        lastName:
+          type: string
+          example: Wilson
+        organizationId:
+          type: integer
+          format: int64
+          example: 92
+        organizationName:
+          type: string
+          example: TellurideSkiTours
+        roleId:
+          type: integer
+          format: int64
+          example: 26
+        roleName:
+          type: string
+          example: Development Support
+        email:
+          type: string
+          example: stt@sttsupplier.com
+        lastLogin:
+          type: string
+          format: date
+        jobTitle:
+          type: string
+          example: Developer
+        workPhoneCountryCode:
+          type: string
+          example: '1'
+        workPhone:
+          type: string
+          example: 720 638-2182
+        mobilePhoneCountryCode:
+          type: string
+          example: '44'
+        mobilePhone:
+          type: string
+          example: 720 638-2182
+        timeZoneId:
+          type: integer
+          format: int64
+          example: 60
+        timeZoneName:
+          type: string
+          example: 'GMT-07:00 - America/Denver'
+        jTimeZoneId:
+          type: string
+          example: EST
+        locale:
+          type: string
+          example: en
+        ldapId:
+          type: integer
+          format: int64
+          example: 1
+        createdByDisplayName:
+          type: string
+          example: Tadas Staskevicius
+        updatedByDisplayName:
+          type: string
+          example: Tadas Staskevicius
+        createdBy:
+          type: integer
+          format: int64
+          example: 10009
+        createdDate:
+          type: string
+          format: date
+        updatedBy:
+          type: integer
+          format: int64
+          example: 10010
+        updatedDate:
+          type: string
+          format: date
+        hashCreationDate:
+          type: string
+          format: date
+        passwordExpiredOn:
+          type: string
+          format: date
+        loginAttempts:
+          type: integer
+          format: int64
+          example: 0
+        invitationExpiresOn:
+          type: string
+          format: date
+        contactId:
+          type: integer
+          format: int64
+          example: 1004
+        subscriptionNames:
+          type: string
+          example: 'Advanced Transaction Request,GFAX Correlation Requested'
+        currentUserInternalFlag:
+          type: boolean
+          example: false
+        eid:
+          type: string
+          example: '600000001'
+      description: ''
+      x-examples:
+        UserExample1: {}
+    AgentOrganizationStatus:
+      type: string
+      example: ACTIVE
+      enum:
+        - ACTIVE
+        - DELETED
+    UserStatus:
+      type: string
+      example: ACTIVE
+      enum:
+        - INVITED
+        - INVITATION_EXPIRED
+        - INVITATION_CANCELED
+        - EXPIRED
+        - ACTIVE
+        - DISABLED
+        - LOCKED
+    HealthStatus:
+      title: HealthStatus
+      type: object
+      properties:
+        appName:
+          type: string
+          example: GregAPI
+        isRunning:
+          type: boolean
+          example: true
+      required:
+        - appName
+        - isRunning
+      x-examples:
+        HealthStatusExample1:
+          appName: ExampleService
+          isRunning: true
+tags:
+  - name: user
+    description: User Domain
